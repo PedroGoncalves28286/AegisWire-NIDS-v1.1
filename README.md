@@ -1,136 +1,226 @@
-# AegisWire NIDS — v1.1 (experimental)
+ AegisWire NIDS — v1.1 (Experimental)
 
-**AegisWire** is a small educational Network Intrusion Detection System written in **C17** for **Windows 10/11**. It captures packets with **Npcap**, parses Ethernet/IPv4/TCP traffic, detects selected traffic patterns, and displays alerts through a native **Win32 GUI**.
+[![Windows Build](https://github.com/PedroGoncalves28286/AegisWire-NIDS-v1.1/actions/workflows/windows-build.yml/badge.svg)](https://github.com/PedroGoncalves28286/AegisWire-NIDS-v1.1/actions/workflows/windows-build.yml)
+![Language](https://img.shields.io/badge/language-C17-blue)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
+![Status](https://img.shields.io/badge/status-experimental-orange)
 
-> **Status:** experimental, not compiled or runtime-validated in this delivery. Do not deploy as a production security control.
+**AegisWire** is a compact, educational **Network Intrusion Detection System (NIDS)** written in **C17** for **Windows 10/11**. It uses **Npcap** to capture packets, inspects Ethernet/IPv4/TCP traffic, and displays heuristic alerts in a native **Win32 GUI**.
+
+> **Project status — experimental.** A Windows x64 build completed successfully in GitHub Actions, and a downloadable executable artifact was produced (as shown in the project's CI run). **Runtime behavior, packet capture, alert accuracy, and stability have not yet been validated on a Windows 11 test machine.** Do not deploy AegisWire as a production security control.
 
 ## Design philosophy
 
-A compact, transparent, local-first network sensor: learn the OSI model through real C packet parsing, keep the detection rules understandable, and avoid cloud services and opaque machine-learning models.
+AegisWire follows a **minimalist, transparent, local-first** approach: learn the OSI model through direct packet parsing in C, keep detection logic understandable, and avoid mandatory cloud services or opaque machine-learning models. The aim is an approachable educational sensor, **not** a replacement for Snort or Suricata.
 
-## Capabilities
+## Features and current status
 
-| Feature | Status | Notes |
-|---|---|---|
-| Npcap capture | Implemented, unverified | BPF `ip and tcp` |
-| Ethernet II / IPv4 / TCP | Implemented, unverified | Basic bounds checks |
-| Single 802.1Q VLAN tag | Implemented, unverified | Double-tagged frames unsupported |
-| SYN port scan | Heuristic | 12 unique ports per 10-second window |
-| SYN burst | Heuristic | 150 SYN packets per window |
-| HTTP login request bursts | Heuristic | Cleartext TCP segments only; no stream reassembly |
-| Native Win32 GUI | Implemented, unverified | Adapter selector, START/STOP/CLEAR LOG |
-| Asynchronous STOP | Improved in v1.1 | Capture thread completion via Windows message |
+| Feature | Implementation status | Notes |
+| --- | --- | --- |
+| Live capture via Npcap | Implemented; runtime testing pending | BPF filter: `ip and tcp` |
+| Ethernet II / IPv4 / TCP parsing | Implemented; runtime testing pending | Basic packet-length checks |
+| Single IEEE 802.1Q VLAN tag | Initial support; runtime testing pending | Stacked VLAN tags are not supported |
+| TCP SYN port-scan indicator | Heuristic | 12 distinct destination ports in a 10-second tracking window |
+| TCP SYN burst indicator | Heuristic | 150 SYN packets per tracking window |
+| Cleartext HTTP login-request burst | Heuristic | Looks for `POST /login` or `POST /signin` in individual TCP segments, generally on ports 80/8080 |
+| Native Win32 GUI | Implemented; runtime testing pending | Adapter selection, START, STOP, CLEAR LOG |
+| Asynchronous STOP | Improved in v1.1 | Capture thread completion is signaled through a Windows message |
+| Windows x64 CI build | **Passed** | GitHub Actions completed compilation and uploaded one executable artifact |
 
-Alerts are indicators, **not evidence of compromise**. HTTPS payloads are not visible to this packet sniffer.
+**Alerts are indicators, not evidence of compromise.** The application cannot read encrypted HTTPS payloads through ordinary packet capture. A matching HTTP request does not establish that authentication failed.
+
+## Build verification versus runtime verification
+
+The GitHub Actions **Windows Build** workflow has successfully run on a Windows x64 runner, including Npcap SDK download, CMake configuration, compilation, executable verification, and artifact upload. This confirms **build-time integration**, not that the program has been tested as a working IDS.
+
+| Verification | Status |
+| --- | --- |
+| Windows x64 CI compilation | **Passed** |
+| CMake configuration | **Passed** |
+| Npcap SDK available to compiler/linker | **Passed (build time)** |
+| `AegisWire.exe` produced | **Passed** |
+| Executable uploaded as CI artifact | **Passed** |
+| Launch and GUI interaction on Windows 11 | **Not yet verified** |
+| Live Npcap capture | **Not yet verified** |
+| SYN-scan / SYN-burst / HTTP detection | **Not yet verified** |
+| Performance, false positives, memory safety | **Not yet verified** |
+
+The workflow may display a **non-blocking deprecation warning** about Node.js 20 for older GitHub Actions dependencies. This is a CI maintenance issue, not evidence of a C compiler error; update action versions after checking their compatibility.
 
 ## Requirements
 
 - Windows 10 or Windows 11 (x64 recommended).
-- [Npcap runtime](https://npcap.com/#download), installed with permissions to capture on the chosen interface.
-- [Npcap SDK](https://npcap.com/#download), extracted to `C:\Npcap-SDK` (or another directory).
-- Visual Studio 2022 with **Desktop development with C++** and Windows SDK.
+- [Npcap runtime](https://npcap.com/#download) installed on the machine that will capture traffic.
+- [Npcap SDK](https://npcap.com/#download) for building from source.
+- Visual Studio 2022 Build Tools with **Desktop development with C++** and Windows SDK.
 - [CMake](https://cmake.org/download/) 3.20 or later.
+- Appropriate permissions for packet capture; administrator rights may be required depending on Npcap installation settings.
 
-## Step-by-step installation and build
+## Option A — Download the CI build artifact
 
-1. Install the Npcap runtime from its official site.
-2. Download the **SDK** separately and extract it to `C:\Npcap-SDK`. Confirm that `Include/pcap.h`, `Lib/x64/wpcap.lib` and `Lib/x64/Packet.lib` exist. SDK layouts vary: inspect your extracted directories.
-3. Install Visual Studio Build Tools and the Windows SDK; open **x64 Native Tools Command Prompt for VS 2022** or the Visual Studio Developer PowerShell.
-4. Clone this repository or download it as ZIP and extract it.
-5. Run the following commands from the repository root:
+1. Open [GitHub Actions](https://github.com/PedroGoncalves28286/AegisWire-NIDS-v1.1/actions/workflows/windows-build.yml).
+2. Open a successful **Windows Build** run.
+3. Under **Artifacts**, download **`AegisWire-NIDS-v1.1-Windows-x64`** (while the artifact is retained).
+4. Extract the downloaded ZIP to a local directory and locate `AegisWire.exe`.
+5. Install the **Npcap runtime** on the target Windows machine before attempting capture.
+
+**Note:** CI artifacts are experimental build outputs, not tested installers or production releases. The artifact may expire according to the workflow retention policy.
+
+## Option B — Build from source
+
+### 1. Install and verify prerequisites
+
+Install the Npcap runtime, extract the Npcap SDK (for example to `C:\Npcap-SDK`), and install Visual Studio 2022 Build Tools with the Windows SDK and CMake.
+
+In a **Visual Studio Developer PowerShell**, verify:
 
 ```powershell
 cmake --version
+cl
+Test-Path 'C:\Npcap-SDK\Include\pcap.h'
+Test-Path 'C:\Npcap-SDK\Lib\x64\wpcap.lib'
+Test-Path 'C:\Npcap-SDK\Lib\x64\Packet.lib'
+```
+
+The three `Test-Path` commands should return `True` when the SDK is extracted to that location. SDK layouts may vary; adapt paths as needed.
+
+### 2. Get the source
+
+```powershell
+git clone https://github.com/PedroGoncalves28286/AegisWire-NIDS-v1.1.git
+cd AegisWire-NIDS-v1.1
+```
+
+Alternatively, use **Code → Download ZIP** and open a terminal in the extracted repository root.
+
+### 3. Configure and compile
+
+```powershell
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DNPCAP_SDK="C:/Npcap-SDK"
 cmake --build build --config Release
 ```
 
-If compilation succeeds, the expected output is `build/Release/AegisWire.exe`. These commands have **not** been validated on Windows in this delivery.
+Expected executable:
 
-## Running the application
+```text
+build/Release/AegisWire.exe
+```
 
-1. Start the executable with appropriate capture permissions.
-2. Choose an Ethernet-compatible capture adapter.
-3. Press **START** and inspect packet and alert counters.
-4. Press **STOP** to request a graceful capture shutdown.
-5. Use **CLEAR LOG** to clear the visible event history.
+If your SDK is elsewhere, change the value of `NPCAP_SDK`. The source build was demonstrated in CI; local Windows installations can still expose environment-specific issues.
 
-Capture visibility depends on network topology and interface configuration. Only monitor networks you own or are authorized to assess.
+## Running AegisWire
 
-## Detection model and limitations
+1. Ensure the **Npcap runtime** is installed.
+2. Launch `AegisWire.exe` with the permissions required by your Npcap configuration.
+3. Select a supported Ethernet-compatible capture adapter.
+4. Click **START** and inspect packet counters and alerts.
+5. Click **STOP** to request capture shutdown; use **CLEAR LOG** to clear the visible log.
 
-- **SYN scan:** unique TCP destination ports per source within a tracking window.
-- **SYN burst:** SYN packet volume per source; not a validated flood classification.
-- **HTTP login burst:** matches `POST /login` or `POST /signin` at the start of an individual TCP segment on ports 80/8080. Does not infer authentication outcome.
-- Detection thresholds are hard-coded.
-- The tracker uses a fixed hash table, so collisions can reset state.
-- No IPv6, UDP/ICMP/ARP detection, TCP stream reassembly, persistent logs, signature rules, or performance benchmarks.
+Packet visibility depends on the chosen interface and network topology. A host cannot automatically see all traffic on a switched network. **Capture only on networks you own or are explicitly authorized to monitor.**
+
+## Detection model
+
+### TCP SYN port scanning
+
+Tracks distinct destination TCP ports contacted by a source within a time window. The current threshold is **12 distinct ports in 10 seconds**. It is a heuristic and may generate false positives.
+
+### TCP SYN bursts
+
+Counts SYN packets from a source in a tracking window; the current threshold is **150 SYN packets**. This is **not** a validated SYN-flood classification and has no traffic baseline.
+
+### Cleartext HTTP authentication activity
+
+Checks individual visible TCP payloads for request prefixes such as `POST /login` and `POST /signin`, generally on ports 80/8080. It does **not** reassemble TCP streams, inspect HTTPS plaintext, or determine login success or failure.
+
+## Known limitations
+
+- Detection thresholds are hard-coded; there is no user-editable rule engine.
+- The fixed-size tracking table can suffer collisions and state resets.
+- Only limited Ethernet/IPv4/TCP parsing; no IPv6, UDP, ICMP, or ARP detection.
+- Initial single-tag 802.1Q support; no stacked VLAN tags.
+- No TCP stream reassembly, persistent event storage, or structured JSON export.
+- No automated parser/detection unit tests or offline PCAP replay yet.
+- No published throughput, packet-loss, memory-safety, or false-positive benchmarks.
+- Build success does not prove runtime reliability or detection accuracy.
+
+## Manual validation plan
+
+Perform these checks **only in a controlled, authorized lab**:
+
+1. Launch the application and verify that adapter selection and GUI controls respond.
+2. Start capture on a suitable interface and verify packet counters against normal, known traffic.
+3. Stop and restart capture repeatedly; check for freezes, resource leaks, or crashes.
+4. Exercise the documented heuristics with controlled test traffic and compare the results with an independent packet capture.
+5. Record false positives and negatives, especially for TCP segmentation and VLAN traffic.
+6. Test truncated and malformed packet inputs once offline PCAP replay/test harness support exists.
+
+See [docs/TESTING.md](docs/TESTING.md) and [docs/REVIEW.md](docs/REVIEW.md). **No runtime test results are claimed here.**
 
 ## Troubleshooting
 
-| Symptom | Suggested check |
-|---|---|
-| `pcap.h` missing | Check `NPCAP_SDK` and the SDK `Include` folder |
-| `wpcap.lib` missing | Check `Lib/x64` and the selected build architecture |
-| No adapters | Verify Npcap installation and capture permissions |
-| No alerts | Check interface, BPF scope, thresholds and network visibility |
-| Build error | Copy the complete compiler output and check Visual Studio components |
+| Symptom | What to check |
+| --- | --- |
+| `pcap.h` not found | `NPCAP_SDK` path and `Include/pcap.h` |
+| `wpcap.lib` / `Packet.lib` not found | SDK library directory and x64 architecture |
+| `cl` is not recognized | Open Visual Studio Developer PowerShell and install the C++ toolchain |
+| No capture adapters | Npcap runtime installation, privileges, adapter compatibility |
+| No packets | Selected interface, BPF filter, traffic visibility, network topology |
+| No alerts | Thresholds, traffic patterns, ports, visibility, TCP segmentation |
+| GUI does not respond | Capture thread lifecycle; collect steps to reproduce and Windows logs |
+| CI warning about Node.js | GitHub Actions dependency version compatibility; not a C build failure |
 
-## Repository structure
+When reporting a problem, include the operating system, Npcap version, compiler version, full error output, and reproducible steps. Avoid sharing private network captures or credentials.
+
+## Repository layout
 
 ```text
-AegisWire-NIDS/
-├── src/main.c
+AegisWire-NIDS-v1.1/
+├── .github/
+│   └── workflows/
+│       └── windows-build.yml
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── REVIEW.md
+│   └── TESTING.md
+├── src/
+│   └── main.c
 ├── CMakeLists.txt
-├── docs/ARCHITECTURE.md
-├── docs/TESTING.md
-├── docs/REVIEW.md
-├── .github/workflows/windows-build.yml
-├── README.md
 ├── CONTRIBUTING.md
-├── SECURITY.md
 ├── LICENSE
-└── .gitignore
+├── README.md
+└── SECURITY.md
 ```
 
-## Verification status
-
-A GitHub Actions Windows build workflow is included, but its successful execution has **not** been confirmed. See [testing plan](docs/TESTING.md) and [v1.1 review](docs/REVIEW.md). The Npcap SDK download URL used by the workflow must be verified before relying on CI.
+A `.gitignore` is recommended for local build artifacts if it is not already present in the repository.
 
 ## Roadmap
 
-- [ ] Verify MSVC/Npcap compilation and GUI lifecycle.
+- [x] Compile the Windows x64 project in GitHub Actions.
+- [x] Verify and upload the CI executable artifact.
+- [ ] Validate launch, capture, STOP behavior, and alerts on Windows 11.
 - [ ] Add parser unit tests and offline PCAP replay.
-- [ ] Modularize packet capture, parsing, detection and GUI.
-- [ ] Replace hash tracker with collision-safe state.
-- [ ] Add protocol coverage and configurable detection thresholds.
-- [ ] Export structured JSON alerts for Wazuh/SIEM integration.
-- [ ] Benchmark throughput, packet loss, and false positives.
+- [ ] Separate capture, parsing, detection, and GUI into modules.
+- [ ] Replace collision-prone tracking with collision-safe state.
+- [ ] Add configurable thresholds and structured JSON alert logging.
+- [ ] Extend protocol coverage (IPv6, UDP, ICMP, ARP).
+- [ ] Integrate alerts with Wazuh or another SIEM.
+- [ ] Benchmark throughput, packet loss, and false-positive rates.
+- [ ] Refresh GitHub Actions dependencies and document compatibility.
+
+## Project evolution
+
+This repository preserves **v1.1** as an incremental stability-focused evolution of the [original AegisWire NIDS v1.0](https://github.com/PedroGoncalves28286/AegisWire-NIDS).
+
+Version 1.1 introduces improvements to capture shutdown, independent detection cooldowns, initial 802.1Q VLAN handling, expanded tracking capacity, build diagnostics, and Windows CI automation. Both versions are retained for educational comparison.
+
+## Responsible use and security
+
+AegisWire is intended for **defensive education and authorized network monitoring**. It is not an enterprise-ready IDS and should not be relied upon as the sole security control. See [SECURITY.md](SECURITY.md) for vulnerability reporting guidance.
 
 ## Attribution
 
-Inspired by *Minimalistic IDS (Intrusion Detection System) in C — Part 1* by Licínio Ferreira. This is a separate educational implementation; attribution does 
-not imply endorsement.
+Inspired by the educational presentation *Minimalistic IDS (Intrusion Detection System) in C — Part 1* by **Licínio Ferreira**. AegisWire is a separate educational implementation; attribution does not imply endorsement or authorship by the presenter.
 
 ## License
-## Project Evolution
 
-AegisWire NIDS v1.1 is an enhanced version of the original
-AegisWire NIDS educational prototype.
-
-### Previous Version
-
-[AegisWire NIDS v1.0](https://github.com/PedroGoncalves28286/AegisWire-NIDS)
-
-### Version 1.1 Improvements
-
-- Improved packet capture lifecycle management.
-- Enhanced detection alert handling.
-- Initial IEEE 802.1Q VLAN support.
-- Expanded tracking capacity.
-- Improved build configuration and documentation.
-
-Both versions are preserved for educational purposes,
-allowing developers to examine the project's technical evolution.
-
-MIT — see [LICENSE](LICENSE).
+Distributed under the **MIT License**. See [LICENSE](LICENSE).
