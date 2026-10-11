@@ -1,18 +1,68 @@
 name: Windows Build
+
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   build:
+    name: Build AegisWire NIDS (Windows x64)
     runs-on: windows-2022
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download Npcap SDK
         shell: pwsh
         run: |
-          Invoke-WebRequest https://npcap.com/dist/npcap-sdk-1.15.zip -OutFile npcap-sdk.zip
-          Expand-Archive npcap-sdk.zip -DestinationPath Npcap-SDK
-      - name: Configure
-        run: cmake -S . -B build -A x64 -DNPCAP_SDK=${{ github.workspace }}/Npcap-SDK
-      - name: Build
-        run: cmake --build build --config Release
+          Invoke-WebRequest `
+            -Uri "https://npcap.com/dist/npcap-sdk-1.15.zip" `
+            -OutFile "npcap-sdk.zip"
+
+          Expand-Archive `
+            -Path "npcap-sdk.zip" `
+            -DestinationPath "Npcap-SDK"
+
+          if (-not (Test-Path "Npcap-SDK/Include/pcap.h")) {
+            throw "Npcap SDK installation failed."
+          }
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          cmake -S . -B build `
+            -G "Visual Studio 17 2022" `
+            -A x64 `
+            -DNPCAP_SDK="${{ github.workspace }}/Npcap-SDK"
+
+      - name: Build AegisWire
+        shell: pwsh
+        run: |
+          cmake --build build --config Release
+
+      - name: Verify executable
+        shell: pwsh
+        run: |
+          $exe = "build/Release/AegisWire.exe"
+
+          if (-not (Test-Path $exe)) {
+            throw "AegisWire.exe was not generated."
+          }
+
+          Write-Host "AegisWire.exe successfully compiled."
+          Get-Item $exe | Select-Object Name, Length, LastWriteTime
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: AegisWire-NIDS-v1.1-Windows-x64
+          path: build/Release/AegisWire.exe
+          if-no-files-found: error
+          retention-days: 30
