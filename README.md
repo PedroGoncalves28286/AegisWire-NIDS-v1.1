@@ -224,3 +224,48 @@ Inspired by the educational presentation *Minimalistic IDS (Intrusion Detection 
 ## License
 
 Distributed under the **MIT License**. See [LICENSE](LICENSE).
+## Project Contributors & Acknowledgements
+
+### Project Development
+
+**AegisWire NIDS** is an open-source educational Network
+Intrusion Detection System developed and maintained by
+Pedro Gonçalves.
+
+The project focuses on lightweight network traffic monitoring,
+native C17 programming, transparent detection mechanisms,
+and practical cybersecurity education.
+
+### Invited Collaborator
+
+**Licínio Ferreira** — Technical Contributor (Invitation Pending)
+
+Licínio Ferreira has been invited to collaborate on the
+AegisWire NIDS project through GitHub.
+
+His educational presentation, *Minimalistic IDS
+(Intrusion Detection System) in C — Part 1*, provided
+technical inspiration for the project's initial development.
+
+Licínio has also demonstrated and tested an experimental
+version of AegisWire using GCC/MinGW, including packet
+capture and TCP SYN port scan detection.
+
+Potential areas of collaboration include:
+
+- C17 development and code review.
+- GCC/MinGW compatibility.
+- Network packet analysis.
+- Intrusion detection improvements.
+- Functional testing and technical validation.
+
+The collaboration invitation is currently pending acceptance.
+
+### Acknowledgements
+
+Special thanks to Licínio Ferreira for sharing his
+knowledge and educational work on network intrusion
+detection systems.
+
+AegisWire NIDS remains an independently maintained
+educational project.
