@@ -1,4 +1,4 @@
-name: .github/workflows/windows-build.yml
+name: Windows Build
 on:
   push:
   pull_request:
