@@ -216,7 +216,36 @@ Version 1.1 introduces improvements to capture shutdown, independent detection c
 ## Responsible use and security
 
 AegisWire is intended for **defensive education and authorized network monitoring**. It is not an enterprise-ready IDS and should not be relied upon as the sole security control. See [SECURITY.md](SECURITY.md) for vulnerability reporting guidance.
+## Windows Build Support
 
+AegisWire NIDS v1.1.1 supports two Windows build toolchains.
+
+| Toolchain | Build Status | Runtime Status |
+|-----------|--------------|----------------|
+| MSVC / Visual Studio 2022 | Verified | Partially tested |
+| GCC 16.2.0 / MSYS2 UCRT64 | Verified | Blocked by Windows Smart App Control |
+
+### GCC / MSYS2 Build
+
+Requirements:
+
+- Windows 10/11 x64
+- MSYS2 UCRT64
+- GCC 16.2.0
+- CMake 4.4.4
+- MinGW-w64 Make
+- Npcap SDK 1.16
+- Npcap Runtime
+
+Build commands:
+
+```bash
+cmake -S . -B build-gcc \
+  -G "MinGW Makefiles" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DNPCAP_SDK="C:/path/to/Npcap-SDK"
+
+cmake --build build-gcc
 ## Attribution
 
 Inspired by the educational presentation *Minimalistic IDS (Intrusion Detection System) in C — Part 1* by **Licínio Ferreira**. AegisWire is a separate educational implementation; attribution does not imply endorsement or authorship by the presenter.
