@@ -109,8 +109,28 @@ A GitHub Actions Windows build workflow is included, but its successful executio
 
 ## Attribution
 
-Inspired by *Minimalistic IDS (Intrusion Detection System) in C — Part 1* by Licínio Ferreira. This is a separate educational implementation; attribution does not imply endorsement.
+Inspired by *Minimalistic IDS (Intrusion Detection System) in C — Part 1* by Licínio Ferreira. This is a separate educational implementation; attribution does 
+not imply endorsement.
 
 ## License
+## Project Evolution
+
+AegisWire NIDS v1.1 is an enhanced version of the original
+AegisWire NIDS educational prototype.
+
+### Previous Version
+
+[AegisWire NIDS v1.0](https://github.com/PedroGoncalves28286/AegisWire-NIDS)
+
+### Version 1.1 Improvements
+
+- Improved packet capture lifecycle management.
+- Enhanced detection alert handling.
+- Initial IEEE 802.1Q VLAN support.
+- Expanded tracking capacity.
+- Improved build configuration and documentation.
+
+Both versions are preserved for educational purposes,
+allowing developers to examine the project's technical evolution.
 
 MIT — see [LICENSE](LICENSE).
