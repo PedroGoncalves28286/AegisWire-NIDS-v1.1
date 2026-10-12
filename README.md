@@ -206,7 +206,8 @@ A `.gitignore` is recommended for local build artifacts if it is not already pre
 - [ ] Integrate alerts with Wazuh or another SIEM.
 - [ ] Benchmark throughput, packet loss, and false-positive rates.
 - [ ] Refresh GitHub Actions dependencies and document compatibility.
-- [ ] Will add software features of **Event Viewer** on Windows and Linux.
+- [ ] Prepare **AegisWire** to run on Windows and on Linux Distributions (will be cross plataform). 
+- [ ] Will add software features of **Event Viewer** of Windows and Linux.
 
 ## Project evolution
 
