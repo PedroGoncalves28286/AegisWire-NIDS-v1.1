@@ -11,7 +11,7 @@
 
 ## Design philosophy
 
-AegisWire follows a **minimalist, transparent, local-first** approach: learn the OSI model through direct packet parsing in C, keep detection logic understandable, and avoid mandatory cloud services or opaque machine-learning models. The aim is an approachable educational sensor, **not** a replacement for Snort or Suricata.
+**AegisWire** follows a **minimalist, transparent, local-first, cross plataform (in progress)** approach: learn the **OSI model** through direct packet parsing in **C**, keep detection logic understandable, and avoid mandatory cloud services or opaque machine-learning models. The aim is an approachable educational sensor, **NOT** a replacement for **Snort** or **Suricata**.
 
 ## Features and current status
 
@@ -206,6 +206,7 @@ A `.gitignore` is recommended for local build artifacts if it is not already pre
 - [ ] Integrate alerts with Wazuh or another SIEM.
 - [ ] Benchmark throughput, packet loss, and false-positive rates.
 - [ ] Refresh GitHub Actions dependencies and document compatibility.
+- [ ] Will add software features of **Event Viewer** on Windows and Linux.
 
 ## Project evolution
 
