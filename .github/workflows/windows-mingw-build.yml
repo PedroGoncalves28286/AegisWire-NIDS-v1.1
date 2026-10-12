@@ -1,0 +1,79 @@
+name: Windows MinGW Build
+
+on:
+  push:
+    branches:
+      - main
+      - feature/mingw-msvc-support
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mingw-build:
+    name: Build AegisWire - GCC MinGW-w64
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2 UCRT64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            unzip
+
+      - name: Download Npcap SDK
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri "https://npcap.com/dist/npcap-sdk-1.15.zip" `
+            -OutFile "npcap-sdk.zip"
+
+          Expand-Archive `
+            -Path "npcap-sdk.zip" `
+            -DestinationPath "Npcap-SDK"
+
+          if (-not (Test-Path "Npcap-SDK/Include/pcap.h")) {
+            throw "Npcap SDK installation failed."
+          }
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build-mingw \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DNPCAP_SDK="$GITHUB_WORKSPACE/Npcap-SDK"
+
+      - name: Build AegisWire
+        run: |
+          cmake --build build-mingw
+
+      - name: Verify executable
+        run: |
+          test -f build-mingw/AegisWire.exe
+          echo "AegisWire.exe successfully compiled with MinGW-w64."
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: AegisWire-NIDS-MinGW-x64
+          path: build-mingw/AegisWire.exe
+          if-no-files-found: error
+          retention-days: 30

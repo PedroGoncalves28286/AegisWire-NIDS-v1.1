@@ -1,0 +1,31 @@
+# AegisWire NIDS - Git Ignore
+
+# Build directories
+build/
+build-*/
+cmake-build-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Compiled files
+*.exe
+*.dll
+*.o
+*.obj
+*.a
+*.lib
+*.pdb
+
+# Local compiler tests
+teste.c
+teste.exe
+
+# IDE and temporary files
+.vscode/
+.idea/
+*.swp
+*~
