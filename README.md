@@ -267,36 +267,32 @@ The project focuses on lightweight network traffic monitoring,
 native C17 programming, transparent detection mechanisms,
 and practical cybersecurity education.
 
-### Invited Collaborator
+### Active Technical Collaborator
 
-**Licínio Ferreira** — Technical Contributor (Invitation Pending)
+**Licínio Ferreira** (`LicinioFerreira`) — **Active Technical Contributor**
 
-Licínio Ferreira has been invited to collaborate on the
-AegisWire NIDS project through GitHub.
+Licínio Ferreira is an active GitHub collaborator on AegisWire NIDS, contributing to code quality, technical review, and development discussions.
 
-His educational presentation, *Minimalistic IDS
-(Intrusion Detection System) in C — Part 1*, provided
-technical inspiration for the project's initial development.
+His educational presentation, *Minimalistic IDS (Intrusion Detection System) in C — Part 1*, provided technical inspiration for the project's initial development.
 
-Licínio has also demonstrated and tested an experimental
-version of AegisWire using GCC/MinGW, including packet
-capture and TCP SYN port scan detection.
+His contributions and technical involvement include:
 
-Potential areas of collaboration include:
+- Refactoring and formatting `src/main.c` using Google-inspired coding conventions to improve readability and maintainability (Pull Request #4; integration pending review).
+- Reviewing repository governance changes, including approval of the `CODEOWNERS` Pull Request #3.
+- Demonstrating and testing an experimental AegisWire build using GCC/MinGW, including packet capture and TCP SYN port scan detection.
+- Collaboration on C17 code quality, Windows compiler compatibility, and intrusion detection improvements.
 
-- C17 development and code review.
-- GCC/MinGW compatibility.
-- Network packet analysis.
-- Intrusion detection improvements.
-- Functional testing and technical validation.
+### Pending Collaboration Invitation
 
-The collaboration invitation is currently pending acceptance.
+**Joel Matos** (`JoelCMatos`) — **Invited Collaborator (Invitation Pending)**
+
+Joel Matos has been invited to collaborate on the AegisWire NIDS GitHub repository. As of this README update, his invitation is pending acceptance; no active development contribution is attributed to him yet.
 
 ### Acknowledgements
 
-Special thanks to Licínio Ferreira for sharing his
-knowledge and educational work on network intrusion
-detection systems.
+Special thanks to Licínio Ferreira for his active technical collaboration,
+code readability improvements, repository reviews, and educational work
+on network intrusion detection systems.
 
 AegisWire NIDS remains an independently maintained
 educational project.
